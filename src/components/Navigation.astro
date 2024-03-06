@@ -4,6 +4,9 @@ import Header from "../components/Header.astro";
 
 <nav class="relative">
   <picture class="relative">
+    <source srcset="/banner-spacex-large.webp" media="(min-width: 1025px)" />
+    <source srcset="/banner-spacex-medium.webp" media="(max-width: 1024px)" />
+    <source srcset="/banner-spacex-small.webp" media="(max-width: 600px)" />
     <img
       src="/banner-spacex.webp"
       alt="SpaceX"
