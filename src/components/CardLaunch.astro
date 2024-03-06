@@ -14,7 +14,7 @@ const sucessStatus = success ? "Éxito" : "Fracaso";
 
 <a href={`/launch/${id}`} class="rounded-lg shadow-md bg-gray-800 hover:scale-105 hover:bg-gray-700 hover:border-gray-500 transition flex flex-col">
   <picture class="flex justify-center bg-slate-300 rounded-t">
-    <img class={`p-4 ${!img && 'bg-black'}`} src={img ? img : '/spacex.jpg'} alt={`Patch for launch ${id}`} />
+    <img class={`p-4 ${!img && 'bg-black'}`} src={img ? img : '/spacex.webp'} alt={`Patch for launch ${id}`} loading="lazy"/>
   </picture>
 
   <header class="p-4 flex-grow">
