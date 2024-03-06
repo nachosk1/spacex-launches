@@ -1,0 +1,209 @@
+---
+import { getLaunchById, getLatestLaunches } from "../../services/spacex.js";
+import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utils/dateFormat.js";
+
+// Esta linea es para que astro sepa que esta ruta es dinamica y se debe prerenderizar en el servidor
+export const prerender = false;
+
+const { id } = Astro.params;
+
+let launch;
+
+if (id) {
+  launch = await getLaunchById({ id });
+}
+
+const sucessStatus = launch?.success ? "Éxito" : "Fracaso";
+---
+
+<Layout title={`Lanzamiento ${launch?.name}`}>
+  <div class="max-w-7xl mx-auto px-4 mt-8 md:mt-10">
+    <h1
+      class="mb-4 text-4xl tracking-tight font-extrabold text-white flex gap-8 items-center"
+    >
+      Flight #{launch?.flight_number} - {launch?.name}
+      <span
+        class:list={[
+          "text-base font-semibold mr-2 px-2.5 py-0.5 rounded mt-2",
+          {
+            "bg-green-400 text-green-100": launch?.success,
+            "bg-red-400 text-red-100": !launch?.success,
+          },
+        ]}>{sucessStatus}</span
+      >
+    </h1>
+
+    <div class="grid md:grid-cols-2 mt-4 md:mt-8">
+      <picture class:list={[
+        "flex mb-10",
+        {
+          "justify-center": launch?.links?.patch?.small,
+          "md:justify-center": !launch?.links?.patch?.small,
+        }
+      ]}>
+        <img
+          src={launch?.links?.patch?.small
+            ? launch?.links?.patch?.small
+            : "/spacex.jpg"}
+          alt={launch?.name}
+          class={`${!launch?.links?.patch?.small && "h-[300px]"}`}
+        />
+      </picture>
+      <div>
+        <p class="text-white text-lg mb-2">{launch?.details}</p>
+        <p class="text-white text-lg mb-2">
+          <strong>Fecha del Primer Vuelo:</strong>
+          {formatDate(launch?.static_fire_date_utc)}
+        </p>
+        <p class="text-white text-lg mb-2">
+          <strong>Fecha Local del Lanzamiento:</strong>
+          {formatDate(launch?.date_local)}
+        </p>
+        <p class="text-white text-lg mb-2">
+          <strong>Intento de Aterrizaje:</strong>
+          {launch?.cores[0].landing_attempt ? "Si" : "No"}
+        </p>
+        {
+          (launch?.links?.webcast ||
+            launch?.links?.article ||
+            launch?.links?.presskit ||
+            launch?.links?.wikipedia) && (
+            <p class="text-white text-lg mb-4">
+              <strong>Puedes verlo en:</strong>
+            </p>
+          )
+        }
+        <div class="grid md:grid-cols-2 gap-4 md:gap-8">
+          {
+            launch?.links?.webcast && (
+              <a
+                href={launch?.links?.webcast}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center bg-red-600 text-white font-bold py-2 px-4 gap-4 rounded hover:bg-red-500"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M18 3a5 5 0 0 1 5 5v8a5 5 0 0 1 -5 5h-12a5 5 0 0 1 -5 -5v-8a5 5 0 0 1 5 -5zm-9 6v6a1 1 0 0 0 1.514 .857l5 -3a1 1 0 0 0 0 -1.714l-5 -3a1 1 0 0 0 -1.514 .857z"
+                    stroke-width="0"
+                    fill="currentColor"
+                  />
+                </svg>
+                YouTube
+              </a>
+            )
+          }
+          {
+            launch?.links?.article && (
+              <a
+                href={launch?.links?.article}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center bg-slate-600 text-white font-bold py-2 px-4 gap-4 rounded hover:bg-slate-500"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M14.897 1a4 4 0 0 1 2.664 1.016l.165 .156l4.1 4.1a4 4 0 0 1 1.168 2.605l.006 .227v5.794a4 4 0 0 1 -1.016 2.664l-.156 .165l-4.1 4.1a4 4 0 0 1 -2.603 1.168l-.227 .006h-5.795a3.999 3.999 0 0 1 -2.664 -1.017l-.165 -.156l-4.1 -4.1a4 4 0 0 1 -1.168 -2.604l-.006 -.227v-5.794a4 4 0 0 1 1.016 -2.664l.156 -.165l4.1 -4.1a4 4 0 0 1 2.605 -1.168l.227 -.006h5.793zm-2.897 10h-1l-.117 .007a1 1 0 0 0 0 1.986l.117 .007v3l.007 .117a1 1 0 0 0 .876 .876l.117 .007h1l.117 -.007a1 1 0 0 0 .876 -.876l.007 -.117l-.007 -.117a1 1 0 0 0 -.764 -.857l-.112 -.02l-.117 -.006v-3l-.007 -.117a1 1 0 0 0 -.876 -.876l-.117 -.007zm.01 -3l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007z"
+                    stroke-width="0"
+                    fill="currentColor"
+                  />
+                </svg>
+                Descargar Press Kit
+              </a>
+            )
+          }
+          {
+            launch?.links?.presskit && (
+              <a
+                href={launch?.links?.presskit}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center bg-gray-700 text-white font-bold py-2 px-4 gap-4 rounded hover:bg-gray-600"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="stroke-white"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" />
+                  <path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" />
+                  <path d="M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                </svg>
+                Leer articulo de la NASA
+              </a>
+            )
+          }
+
+          {
+            launch?.links?.wikipedia && (
+              <a
+                href={launch?.links?.wikipedia}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center bg-zinc-700 text-white font-bold py-2 px-4 gap-4 rounded hover:bg-zinc-600"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="stroke-white"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M3 4.984h2" />
+                  <path d="M8 4.984h2.5" />
+                  <path d="M14.5 4.984h2.5" />
+                  <path d="M22 4.984h-2" />
+                  <path d="M4 4.984l5.455 14.516l6.545 -14.516" />
+                  <path d="M9 4.984l6 14.516l6 -14.516" />
+                </svg>
+                Leer en Wikipedia
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-center mt-2">
+    <a
+      href="javascript:void(0)"
+      onclick="window.history.back();"
+      class="mt-6 inline-block rounded border bg-white px-5 py-3 text-sm font-medium text-black hover:bg-black hover:text-white hover:border-gray-600 focus:outline-none focus:ring transition duration-300 ease-in-out"
+    >
+      Volver
+    </a>
+  </div>
+</Layout>
